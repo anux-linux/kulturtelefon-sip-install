@@ -12,8 +12,33 @@ if [ -z "$drachtio_secret" ]; then
     drachtio_secret=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | head -c 32)
 fi
 
+# Auto-detect network configuration if not already set
+if [ -z "$drachtio_external_ip" ]; then
+    verbose "Auto-detecting external IP address"
+    drachtio_external_ip=$(curl -s --max-time 5 ifconfig.me || curl -s --max-time 5 icanhazip.com || curl -s --max-time 5 ipinfo.io/ip)
+fi
+
+if [ -z "$drachtio_local_ip" ]; then
+    verbose "Auto-detecting local IP address"
+    drachtio_local_ip=$(hostname -I | awk '{print $1}')
+fi
+
+if [ -z "$drachtio_dns_name" ]; then
+    verbose "Auto-detecting DNS name"
+    # Try reverse DNS lookup, fall back to hostname
+    drachtio_dns_name=$(dig +short -x "$drachtio_external_ip" 2>/dev/null | sed 's/\.$//' || hostname -f)
+    # If still empty, use the external IP as fallback
+    if [ -z "$drachtio_dns_name" ]; then
+        drachtio_dns_name="$drachtio_external_ip"
+    fi
+fi
+
+verbose "External IP: $drachtio_external_ip"
+verbose "Local IP: $drachtio_local_ip"
+verbose "DNS name: $drachtio_dns_name"
+
 verbose "Installing drachtio dependencies"
-apt-get install -y libcurl4-openssl-dev libboost-all-dev libssl-dev autoconf automake libtool libtool-bin cmake
+apt-get install -y libcurl4-openssl-dev libboost-all-dev libssl-dev autoconf automake libtool libtool-bin cmake curl dnsutils
 
 verbose "Installing Node.js and PM2"
 apt-get install -y nodejs npm
@@ -64,14 +89,18 @@ fi
 verbose "Creating drachtio configuration directories"
 mkdir -p /etc/drachtio
 mkdir -p /var/log/drachtio
+mkdir -p /var/log/drachtio/archive
 
 # Only create config if it doesn't exist (preserve existing secrets)
 if [ ! -f /etc/drachtio/drachtio.conf.xml ]; then
     verbose "Installing drachtio configuration file"
     cp "${SCRIPT_DIR}/resources/drachtio/drachtio.conf.xml" /etc/drachtio/drachtio.conf.xml
 
-    # Replace placeholder with actual secret
+    # Replace placeholders with actual values
     sed -i "s/DRACHTIO_SECRET_PLACEHOLDER/${drachtio_secret}/" /etc/drachtio/drachtio.conf.xml
+    sed -i "s/DRACHTIO_EXTERNAL_IP_PLACEHOLDER/${drachtio_external_ip}/" /etc/drachtio/drachtio.conf.xml
+    sed -i "s/DRACHTIO_LOCAL_IP_PLACEHOLDER/${drachtio_local_ip}/" /etc/drachtio/drachtio.conf.xml
+    sed -i "s/DRACHTIO_DNS_PLACEHOLDER/${drachtio_dns_name}/" /etc/drachtio/drachtio.conf.xml
 else
     verbose "drachtio config already exists, skipping (preserving existing secret)"
 fi

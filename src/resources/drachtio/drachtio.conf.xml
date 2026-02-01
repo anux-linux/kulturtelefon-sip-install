@@ -1,9 +1,8 @@
 <drachtio>
   <sip>
     <contacts>
-      <contact>sip:*;transport=udp,tcp</contact>
+      <contact dns-names="DRACHTIO_DNS_PLACEHOLDER" external-ip="DRACHTIO_EXTERNAL_IP_PLACEHOLDER">sip:DRACHTIO_LOCAL_IP_PLACEHOLDER;transport=udp,tcp</contact>
     </contacts>
-    <public-address>1.2.3.4</public-address> 
   </sip>
 
   <admin>
@@ -14,7 +13,13 @@
 
   <logging>
     <loglevel>info</loglevel>
-    <destination>file</destination>
-    <filename>/var/log/drachtio.log</filename>
+    <file>
+      <name>/var/log/drachtio/drachtio.log</name>
+      <archive>/var/log/drachtio/archive</archive>
+      <size>50</size>
+      <maxSize>100</maxSize>
+      <minSize>2000</minSize>
+      <auto-flush>true</auto-flush>
+    </file>
   </logging>
 </drachtio>
