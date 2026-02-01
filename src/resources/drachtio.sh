@@ -19,25 +19,46 @@ verbose "Installing Node.js and PM2"
 apt-get install -y nodejs npm
 npm install -g pm2
 
-# Only build if drachtio-server binary doesn't exist
-if [ ! -f /usr/local/bin/drachtio-server ]; then
+verbose "Setting up drachtio-server source"
+cd /usr/local/src
+
+NEEDS_BUILD=false
+
+# Clone if directory doesn't exist
+if [ ! -d drachtio-server ]; then
+    verbose "Cloning drachtio-server repository"
+    git clone --recurse-submodules https://github.com/davehorton/drachtio-server.git
+    NEEDS_BUILD=true
+fi
+
+cd drachtio-server
+
+# Check current commit before pull
+OLD_HEAD=$(git rev-parse HEAD 2>/dev/null || echo "none")
+
+# Pull latest changes
+verbose "Pulling latest drachtio-server updates"
+git fetch --all
+git pull origin main || git pull origin master
+git submodule update --init --recursive
+
+# Check if there are new changes
+NEW_HEAD=$(git rev-parse HEAD)
+if [ "$OLD_HEAD" != "$NEW_HEAD" ]; then
+    verbose "New updates found, rebuild required"
+    NEEDS_BUILD=true
+fi
+
+# Build if binary doesn't exist or if there are updates
+if [ ! -f /usr/local/bin/drachtio-server ] || [ "$NEEDS_BUILD" = true ]; then
     verbose "Building drachtio-server from source"
-    cd /usr/local/src
-
-    # Clone only if directory doesn't exist
-    if [ ! -d drachtio-server ]; then
-        git clone --recurse-submodules https://github.com/davehorton/drachtio-server.git
-    fi
-
-    cd drachtio-server
-    git submodule update --init --recursive
     ./bootstrap.sh
     mkdir -p build && cd build
     ../configure
     make
     make install
 else
-    verbose "drachtio-server already installed, skipping build"
+    verbose "drachtio-server is up to date, skipping build"
 fi
 
 verbose "Creating drachtio configuration directories"
