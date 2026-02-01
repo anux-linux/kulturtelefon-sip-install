@@ -1,0 +1,11 @@
+[Unit]
+Description=Drachtio SIP Server
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/drachtio -f /etc/drachtio/drachtio.conf.xml
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

@@ -24,6 +24,16 @@ apt-get install -y dialog
 apt-get install -y nano
 apt-get install -y net-tools
 apt-get install -y gpg
+apt-get install -y git
+apt-get install -y curl
+apt-get install -y build-essential
+apt-get install -y autoconf
+apt-get install -y automake
+apt-get install -y libtool
+apt-get install -y pkg-config
+apt-get install -y libssl-dev
+apt-get install -y zlib1g-dev
+apt-get install -y libcurl4-openssl-dev
 
 #SNMP
 apt-get install -y snmpd
@@ -42,3 +52,6 @@ resources/fail2ban.sh
 
 #FreeSWITCH
 resources/switch.sh
+
+#Drachtio Server
+resources/drachtio.sh
