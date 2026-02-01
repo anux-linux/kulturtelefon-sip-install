@@ -5,11 +5,7 @@
     </contacts>
   </sip>
 
-  <admin>
-    <ip>127.0.0.1</ip>
-    <port>9022</port>
-    <secret>DRACHTIO_SECRET_PLACEHOLDER</secret>
-  </admin>
+  <admin port="9022" secret="DRACHTIO_SECRET_PLACEHOLDER" tcp-keepalive-interval="30">0.0.0.0</admin>
 
   <logging>
     <loglevel>info</loglevel>
