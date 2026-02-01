@@ -13,7 +13,7 @@ if [ -z "$drachtio_secret" ]; then
 fi
 
 verbose "Installing drachtio dependencies"
-apt-get install -y libcurl4-openssl-dev libboost-all-dev libssl-dev autoconf automake libtool
+apt-get install -y libcurl4-openssl-dev libboost-all-dev libssl-dev autoconf automake libtool libtool-bin
 
 verbose "Installing Node.js and PM2"
 apt-get install -y nodejs npm
