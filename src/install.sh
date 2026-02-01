@@ -3,6 +3,9 @@
 #move to script directory so all relative paths work
 cd "$(dirname "$0")"
 
+# Save script directory for later use
+SCRIPT_DIR="$(pwd)"
+
 #includes
 . ./resources/config.sh
 . ./resources/colors.sh
@@ -42,16 +45,16 @@ service snmpd restart
 
 
 #IPTables
-resources/iptables.sh
+$SCRIPT_DIR/resources/iptables.sh
 
 #sngrep
-resources/sngrep.sh
+$SCRIPT_DIR/resources/sngrep.sh
 
 #Fail2ban
-resources/fail2ban.sh
+$SCRIPT_DIR/resources/fail2ban.sh
 
 #FreeSWITCH
-resources/switch.sh
+$SCRIPT_DIR/resources/switch.sh
 
 #Drachtio Server
-resources/drachtio.sh
+$SCRIPT_DIR/resources/drachtio.sh
