@@ -1,12 +1,11 @@
 #!/bin/sh
 
-#move to script directory so all relative paths work
-cd "$(dirname "$0")"
-
+# Get script directory from parameter or determine it locally
+SCRIPT_DIR="${1:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 #add the includes
-. ./config.sh
-. ./colors.sh
+. "$SCRIPT_DIR/resources/config.sh"
+. "$SCRIPT_DIR/resources/colors.sh"
 
 #send a message
 verbose "Configuring IPTables"

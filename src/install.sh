@@ -45,16 +45,16 @@ service snmpd restart
 
 
 #IPTables
-$SCRIPT_DIR/resources/iptables.sh
+sh "$SCRIPT_DIR/resources/iptables.sh" "$SCRIPT_DIR"
 
 #sngrep
-$SCRIPT_DIR/resources/sngrep.sh
+sh "$SCRIPT_DIR/resources/sngrep.sh" "$SCRIPT_DIR"
 
 #Fail2ban
-$SCRIPT_DIR/resources/fail2ban.sh
+sh "$SCRIPT_DIR/resources/fail2ban.sh" "$SCRIPT_DIR"
 
 #FreeSWITCH
-$SCRIPT_DIR/resources/switch.sh
+sh "$SCRIPT_DIR/resources/switch.sh" "$SCRIPT_DIR"
 
 #Drachtio Server
-$SCRIPT_DIR/resources/drachtio.sh
+sh "$SCRIPT_DIR/resources/drachtio.sh" "$SCRIPT_DIR"

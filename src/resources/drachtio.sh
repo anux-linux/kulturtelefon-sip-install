@@ -1,14 +1,11 @@
 #!/bin/sh
 
-#move to script directory so all relative paths work
-cd "$(dirname "$0")"
-
-# Save script directory for later use
-SCRIPT_DIR="$(pwd)"
+# Get script directory from parameter or determine it locally
+SCRIPT_DIR="${1:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 #add the includes
-. ./config.sh
-. ./colors.sh
+. "$SCRIPT_DIR/resources/config.sh"
+. "$SCRIPT_DIR/resources/colors.sh"
 
 # Generate random secret for drachtio admin connection if not already set
 if [ -z "$drachtio_secret" ]; then
@@ -37,13 +34,13 @@ mkdir -p /etc/drachtio
 mkdir -p /var/log/drachtio
 
 verbose "Installing drachtio configuration file"
-cp "${SCRIPT_DIR}/drachtio/drachtio.conf.xml" /etc/drachtio/drachtio.conf.xml
+cp "${SCRIPT_DIR}/resources/drachtio/drachtio.conf.xml" /etc/drachtio/drachtio.conf.xml
 
 # Replace placeholder with actual secret
 sed -i "s/DRACHTIO_SECRET_PLACEHOLDER/${drachtio_secret}/" /etc/drachtio/drachtio.conf.xml
 
 verbose "Installing drachtio systemd service"
-cp "${SCRIPT_DIR}/drachtio/drachtio.service" /etc/systemd/system/drachtio.service
+cp "${SCRIPT_DIR}/resources/drachtio/drachtio.service" /etc/systemd/system/drachtio.service
 
 verbose "Enabling and starting drachtio service"
 systemctl daemon-reload
