@@ -8,12 +8,13 @@
   </domains>
 
   <settings>
-    <!-- Bind to localhost only - accessible only from local applications -->
+    <!-- SIP: Bind to localhost only - accessible only from local applications -->
     <param name="sip-ip" value="127.0.0.1"/>
-    <param name="rtp-ip" value="127.0.0.1"/>
-    <param name="ext-sip-ip" value="127.0.0.1"/>
-    <param name="ext-rtp-ip" value="127.0.0.1"/>
     <param name="sip-port" value="5086"/>
+
+    <!-- RTP: Use public IP for direct media with carriers -->
+    <param name="rtp-ip" value="FREESWITCH_PUBLIC_IP_PLACEHOLDER"/>
+    <param name="ext-rtp-ip" value="FREESWITCH_PUBLIC_IP_PLACEHOLDER"/>
 
     <param name="dialplan" value="XML"/>
     <param name="context" value="public"/>
