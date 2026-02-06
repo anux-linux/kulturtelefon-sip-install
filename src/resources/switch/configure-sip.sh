@@ -10,7 +10,19 @@ SCRIPT_DIR="${1:-$(cd "$(dirname "$0")/../.." && pwd)}"
 FS_PROFILE_DIR="/etc/freeswitch/sip_profiles"
 CONFIG_DIR="$SCRIPT_DIR/resources/switch/sip_profiles"
 
-verbose "Configuring FreeSWITCH SIP profiles for localhost-only access"
+# Auto-detect public IP if not already set
+if [ -z "$freeswitch_public_ip" ]; then
+    verbose "Auto-detecting public IP address for RTP"
+    freeswitch_public_ip=$(curl -s --max-time 5 ifconfig.me || curl -s --max-time 5 icanhazip.com || curl -s --max-time 5 ipinfo.io/ip)
+fi
+
+if [ -z "$freeswitch_public_ip" ]; then
+    error "Failed to detect public IP address"
+    exit 1
+fi
+
+verbose "Public IP for RTP: $freeswitch_public_ip"
+verbose "Configuring FreeSWITCH SIP profiles (SIP: localhost, RTP: public IP)"
 
 # Check if FreeSWITCH profile directory exists
 if [ ! -d "$FS_PROFILE_DIR" ]; then
@@ -41,9 +53,13 @@ if [ -f "$FS_PROFILE_DIR/external.xml" ] && [ ! -f "$FS_PROFILE_DIR/external.xml
 fi
 
 # Install custom SIP profiles
-verbose "Installing custom SIP profiles (localhost-only)"
+verbose "Installing custom SIP profiles (SIP: localhost, RTP: public IP)"
 cp "$CONFIG_DIR/internal.xml" "$FS_PROFILE_DIR/internal.xml"
 cp "$CONFIG_DIR/external.xml" "$FS_PROFILE_DIR/external.xml"
+
+# Replace placeholder with actual public IP
+sed -i "s/FREESWITCH_PUBLIC_IP_PLACEHOLDER/${freeswitch_public_ip}/g" "$FS_PROFILE_DIR/internal.xml"
+sed -i "s/FREESWITCH_PUBLIC_IP_PLACEHOLDER/${freeswitch_public_ip}/g" "$FS_PROFILE_DIR/external.xml"
 
 # Set proper permissions
 chown freeswitch:freeswitch "$FS_PROFILE_DIR/internal.xml"
@@ -64,8 +80,9 @@ sleep 3
 # Check if FreeSWITCH is running
 if systemctl is-active --quiet freeswitch; then
     verbose "FreeSWITCH configured successfully"
-    verbose "Internal profile: 127.0.0.1:5066"
-    verbose "External profile: 127.0.0.1:5086"
+    verbose "Internal profile SIP: 127.0.0.1:5066"
+    verbose "External profile SIP: 127.0.0.1:5086"
+    verbose "RTP media IP: $freeswitch_public_ip"
 else
     error "FreeSWITCH failed to start. Check logs: journalctl -u freeswitch"
     exit 1

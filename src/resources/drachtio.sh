@@ -18,11 +18,6 @@ if [ -z "$drachtio_external_ip" ]; then
     drachtio_external_ip=$(curl -s --max-time 5 ifconfig.me || curl -s --max-time 5 icanhazip.com || curl -s --max-time 5 ipinfo.io/ip)
 fi
 
-if [ -z "$drachtio_local_ip" ]; then
-    verbose "Auto-detecting local IP address"
-    drachtio_local_ip=$(hostname -I | awk '{print $1}')
-fi
-
 if [ -z "$drachtio_dns_name" ]; then
     verbose "Auto-detecting DNS name"
     # Try reverse DNS lookup, fall back to hostname
@@ -34,7 +29,6 @@ if [ -z "$drachtio_dns_name" ]; then
 fi
 
 verbose "External IP: $drachtio_external_ip"
-verbose "Local IP: $drachtio_local_ip"
 verbose "DNS name: $drachtio_dns_name"
 
 verbose "Installing drachtio dependencies"
@@ -99,7 +93,6 @@ if [ ! -f /etc/drachtio/drachtio.conf.xml ]; then
     # Replace placeholders with actual values
     sed -i "s/DRACHTIO_SECRET_PLACEHOLDER/${drachtio_secret}/" /etc/drachtio/drachtio.conf.xml
     sed -i "s/DRACHTIO_EXTERNAL_IP_PLACEHOLDER/${drachtio_external_ip}/" /etc/drachtio/drachtio.conf.xml
-    sed -i "s/DRACHTIO_LOCAL_IP_PLACEHOLDER/${drachtio_local_ip}/" /etc/drachtio/drachtio.conf.xml
     sed -i "s/DRACHTIO_DNS_PLACEHOLDER/${drachtio_dns_name}/" /etc/drachtio/drachtio.conf.xml
 else
     verbose "drachtio config already exists, skipping (preserving existing secret)"

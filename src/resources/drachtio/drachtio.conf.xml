@@ -1,7 +1,7 @@
 <drachtio>
   <sip>
     <contacts>
-      <contact dns-names="DRACHTIO_DNS_PLACEHOLDER" external-ip="DRACHTIO_EXTERNAL_IP_PLACEHOLDER">sip:DRACHTIO_LOCAL_IP_PLACEHOLDER;transport=udp,tcp</contact>
+      <contact dns-names="DRACHTIO_DNS_PLACEHOLDER" external-ip="DRACHTIO_EXTERNAL_IP_PLACEHOLDER">sip:0.0.0.0;transport=udp,tcp</contact>
     </contacts>
   </sip>
 
