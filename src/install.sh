@@ -55,6 +55,3 @@ sh "$SCRIPT_DIR/resources/fail2ban.sh" "$SCRIPT_DIR"
 
 #FreeSWITCH
 sh "$SCRIPT_DIR/resources/switch.sh" "$SCRIPT_DIR"
-
-#Drachtio Server
-sh "$SCRIPT_DIR/resources/drachtio.sh" "$SCRIPT_DIR"
