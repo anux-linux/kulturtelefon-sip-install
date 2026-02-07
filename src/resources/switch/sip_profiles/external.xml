@@ -8,11 +8,12 @@
   </domains>
 
   <settings>
-    <!-- SIP: Bind to localhost only - accessible only from local applications -->
-    <param name="sip-ip" value="127.0.0.1"/>
-    <param name="sip-port" value="5086"/>
+    <!-- SIP: Bind to all interfaces for public internet access -->
+    <param name="sip-ip" value="FREESWITCH_PUBLIC_IP_PLACEHOLDER"/>
+    <param name="sip-port" value="5060"/>
+    <param name="ext-sip-ip" value="FREESWITCH_PUBLIC_IP_PLACEHOLDER"/>
 
-    <!-- RTP: Use public IP for direct media with carriers -->
+    <!-- RTP: Use public IP for media -->
     <param name="rtp-ip" value="FREESWITCH_PUBLIC_IP_PLACEHOLDER"/>
     <param name="ext-rtp-ip" value="FREESWITCH_PUBLIC_IP_PLACEHOLDER"/>
 
@@ -35,6 +36,10 @@
     <param name="session-timeout" value="600"/>
     <param name="minimum-session-expires" value="90"/>
     <param name="tls" value="false"/>
-    <param name="aggressive-nat-detection" value="false"/>
+
+    <!-- NAT traversal -->
+    <param name="aggressive-nat-detection" value="true"/>
+    <param name="NDLB-received-in-nat-reg-contact" value="true"/>
+    <param name="NDLB-force-rport" value="true"/>
   </settings>
 </profile>

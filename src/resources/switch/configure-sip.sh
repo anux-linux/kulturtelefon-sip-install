@@ -9,13 +9,12 @@ SCRIPT_DIR="${1:-$(cd "$(dirname "$0")/../.." && pwd)}"
 
 FS_PROFILE_DIR="/etc/freeswitch/sip_profiles"
 FS_AUTOLOAD_DIR="/etc/freeswitch/autoload_configs"
-FS_DIALPLAN_PUBLIC_DIR="/etc/freeswitch/dialplan/public"
 CONFIG_DIR="$SCRIPT_DIR/resources/switch/sip_profiles"
 EVENTSOCKET_CONFIG_DIR="$SCRIPT_DIR/resources/switch/config"
 
 # Auto-detect public IP if not already set
 if [ -z "$freeswitch_public_ip" ]; then
-    verbose "Auto-detecting public IP address for RTP"
+    verbose "Auto-detecting public IP address"
     freeswitch_public_ip=$(curl -s --max-time 5 ifconfig.me || curl -s --max-time 5 icanhazip.com || curl -s --max-time 5 ipinfo.io/ip)
 fi
 
@@ -24,8 +23,8 @@ if [ -z "$freeswitch_public_ip" ]; then
     exit 1
 fi
 
-verbose "Public IP for RTP: $freeswitch_public_ip"
-verbose "Configuring FreeSWITCH SIP profiles (SIP: localhost, RTP: public IP)"
+verbose "Public IP: $freeswitch_public_ip"
+verbose "Configuring FreeSWITCH SIP profiles for public internet access"
 
 # Check if FreeSWITCH profile directory exists
 if [ ! -d "$FS_PROFILE_DIR" ]; then
@@ -56,10 +55,9 @@ if [ -f "$FS_PROFILE_DIR/external.xml" ] && [ ! -f "$FS_PROFILE_DIR/external.xml
 fi
 
 # Install custom SIP profiles
-verbose "Installing custom SIP profiles (SIP: localhost, RTP: public IP)"
+verbose "Installing custom SIP profiles"
 cp "$CONFIG_DIR/internal.xml" "$FS_PROFILE_DIR/internal.xml"
 cp "$CONFIG_DIR/external.xml" "$FS_PROFILE_DIR/external.xml"
-cp "$CONFIG_DIR/drachtio_mrf.xml" "$FS_PROFILE_DIR/drachtio_mrf.xml"
 
 # Replace placeholder with actual public IP
 sed -i "s/FREESWITCH_PUBLIC_IP_PLACEHOLDER/${freeswitch_public_ip}/g" "$FS_PROFILE_DIR/internal.xml"
@@ -68,10 +66,8 @@ sed -i "s/FREESWITCH_PUBLIC_IP_PLACEHOLDER/${freeswitch_public_ip}/g" "$FS_PROFI
 # Set proper permissions
 chown freeswitch:freeswitch "$FS_PROFILE_DIR/internal.xml"
 chown freeswitch:freeswitch "$FS_PROFILE_DIR/external.xml"
-chown freeswitch:freeswitch "$FS_PROFILE_DIR/drachtio_mrf.xml"
 chmod 644 "$FS_PROFILE_DIR/internal.xml"
 chmod 644 "$FS_PROFILE_DIR/external.xml"
-chmod 644 "$FS_PROFILE_DIR/drachtio_mrf.xml"
 
 # Configure Event Socket
 verbose "Configuring Event Socket with auto-generated password"
@@ -100,29 +96,6 @@ chmod 600 "$SCRIPT_DIR/.event_socket_password"
 
 verbose "Event Socket password saved to: $SCRIPT_DIR/.event_socket_password"
 
-# Configure Drachtio dialplan
-verbose "Installing Drachtio dialplan to public context"
-
-# Check if public dialplan directory exists
-if [ ! -d "$FS_DIALPLAN_PUBLIC_DIR" ]; then
-    error "FreeSWITCH public dialplan directory not found: $FS_DIALPLAN_PUBLIC_DIR"
-    exit 1
-fi
-
-# Backup original dialplan file if it exists
-if [ -f "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml" ] && [ ! -f "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml.orig" ]; then
-    cp "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml" "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml.orig"
-fi
-
-# Install drachtio dialplan
-cp "$EVENTSOCKET_CONFIG_DIR/00_drachtio.xml" "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml"
-
-# Set proper permissions
-chown freeswitch:freeswitch "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml"
-chmod 644 "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml"
-
-verbose "Drachtio dialplan installed successfully"
-
 # Enable and restart FreeSWITCH
 verbose "Enabling FreeSWITCH service"
 systemctl enable freeswitch
@@ -136,9 +109,8 @@ sleep 3
 # Check if FreeSWITCH is running
 if systemctl is-active --quiet freeswitch; then
     verbose "FreeSWITCH configured successfully"
-    verbose "Internal profile SIP: 127.0.0.1:5066"
-    verbose "External profile SIP: 127.0.0.1:5086"
-    verbose "Drachtio MRF profile SIP: 127.0.0.1:5080"
+    verbose "External profile SIP: $freeswitch_public_ip:5060"
+    verbose "Internal profile SIP: $freeswitch_public_ip:5066"
     verbose "RTP media IP: $freeswitch_public_ip"
     verbose "Event Socket: localhost:8021"
     verbose "Event Socket password: $event_socket_password"
