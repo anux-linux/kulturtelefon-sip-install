@@ -58,6 +58,7 @@ fi
 verbose "Installing custom SIP profiles (SIP: localhost, RTP: public IP)"
 cp "$CONFIG_DIR/internal.xml" "$FS_PROFILE_DIR/internal.xml"
 cp "$CONFIG_DIR/external.xml" "$FS_PROFILE_DIR/external.xml"
+cp "$CONFIG_DIR/drachtio_mrf.xml" "$FS_PROFILE_DIR/drachtio_mrf.xml"
 
 # Replace placeholder with actual public IP
 sed -i "s/FREESWITCH_PUBLIC_IP_PLACEHOLDER/${freeswitch_public_ip}/g" "$FS_PROFILE_DIR/internal.xml"
@@ -66,8 +67,10 @@ sed -i "s/FREESWITCH_PUBLIC_IP_PLACEHOLDER/${freeswitch_public_ip}/g" "$FS_PROFI
 # Set proper permissions
 chown freeswitch:freeswitch "$FS_PROFILE_DIR/internal.xml"
 chown freeswitch:freeswitch "$FS_PROFILE_DIR/external.xml"
+chown freeswitch:freeswitch "$FS_PROFILE_DIR/drachtio_mrf.xml"
 chmod 644 "$FS_PROFILE_DIR/internal.xml"
 chmod 644 "$FS_PROFILE_DIR/external.xml"
+chmod 644 "$FS_PROFILE_DIR/drachtio_mrf.xml"
 
 # Configure Event Socket
 verbose "Configuring Event Socket with auto-generated password"
@@ -111,6 +114,7 @@ if systemctl is-active --quiet freeswitch; then
     verbose "FreeSWITCH configured successfully"
     verbose "Internal profile SIP: 127.0.0.1:5066"
     verbose "External profile SIP: 127.0.0.1:5086"
+    verbose "Drachtio MRF profile SIP: 127.0.0.1:5080"
     verbose "RTP media IP: $freeswitch_public_ip"
     verbose "Event Socket: localhost:8021"
     verbose "Event Socket password: $event_socket_password"
