@@ -1,0 +1,6 @@
+<include>
+  <extension name="drachtio_media_leg">
+    <condition field="destination_number" expression="^drachtio$">
+      <action application="park"/>
+  </extension>
+</include>

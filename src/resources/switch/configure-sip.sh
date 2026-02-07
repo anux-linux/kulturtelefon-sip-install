@@ -9,6 +9,7 @@ SCRIPT_DIR="${1:-$(cd "$(dirname "$0")/../.." && pwd)}"
 
 FS_PROFILE_DIR="/etc/freeswitch/sip_profiles"
 FS_AUTOLOAD_DIR="/etc/freeswitch/autoload_configs"
+FS_DIALPLAN_PUBLIC_DIR="/etc/freeswitch/dialplan/public"
 CONFIG_DIR="$SCRIPT_DIR/resources/switch/sip_profiles"
 EVENTSOCKET_CONFIG_DIR="$SCRIPT_DIR/resources/switch/config"
 
@@ -98,6 +99,29 @@ echo "$event_socket_password" > "$SCRIPT_DIR/.event_socket_password"
 chmod 600 "$SCRIPT_DIR/.event_socket_password"
 
 verbose "Event Socket password saved to: $SCRIPT_DIR/.event_socket_password"
+
+# Configure Drachtio dialplan
+verbose "Installing Drachtio dialplan to public context"
+
+# Check if public dialplan directory exists
+if [ ! -d "$FS_DIALPLAN_PUBLIC_DIR" ]; then
+    error "FreeSWITCH public dialplan directory not found: $FS_DIALPLAN_PUBLIC_DIR"
+    exit 1
+fi
+
+# Backup original dialplan file if it exists
+if [ -f "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml" ] && [ ! -f "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml.orig" ]; then
+    cp "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml" "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml.orig"
+fi
+
+# Install drachtio dialplan
+cp "$EVENTSOCKET_CONFIG_DIR/00_drachtio.xml" "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml"
+
+# Set proper permissions
+chown freeswitch:freeswitch "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml"
+chmod 644 "$FS_DIALPLAN_PUBLIC_DIR/00_drachtio.xml"
+
+verbose "Drachtio dialplan installed successfully"
 
 # Enable and restart FreeSWITCH
 verbose "Enabling FreeSWITCH service"
