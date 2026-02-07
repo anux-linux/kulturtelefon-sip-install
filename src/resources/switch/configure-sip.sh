@@ -8,7 +8,9 @@ SCRIPT_DIR="${1:-$(cd "$(dirname "$0")/../.." && pwd)}"
 . "$SCRIPT_DIR/resources/colors.sh"
 
 FS_PROFILE_DIR="/etc/freeswitch/sip_profiles"
+FS_AUTOLOAD_DIR="/etc/freeswitch/autoload_configs"
 CONFIG_DIR="$SCRIPT_DIR/resources/switch/sip_profiles"
+EVENTSOCKET_CONFIG_DIR="$SCRIPT_DIR/resources/switch/config"
 
 # Auto-detect public IP if not already set
 if [ -z "$freeswitch_public_ip" ]; then
@@ -67,6 +69,33 @@ chown freeswitch:freeswitch "$FS_PROFILE_DIR/external.xml"
 chmod 644 "$FS_PROFILE_DIR/internal.xml"
 chmod 644 "$FS_PROFILE_DIR/external.xml"
 
+# Configure Event Socket
+verbose "Configuring Event Socket with auto-generated password"
+
+# Generate random 12-character password
+event_socket_password=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 12)
+
+# Backup original event_socket.conf.xml if it exists
+if [ -f "$FS_AUTOLOAD_DIR/event_socket.conf.xml" ] && [ ! -f "$FS_AUTOLOAD_DIR/event_socket.conf.xml.orig" ]; then
+    cp "$FS_AUTOLOAD_DIR/event_socket.conf.xml" "$FS_AUTOLOAD_DIR/event_socket.conf.xml.orig"
+fi
+
+# Install event socket configuration
+cp "$EVENTSOCKET_CONFIG_DIR/event_socket.conf.xml" "$FS_AUTOLOAD_DIR/event_socket.conf.xml"
+
+# Replace placeholder with generated password
+sed -i "s/EVENT_SOCKET_PASSWORD_PLACEHOLDER/${event_socket_password}/g" "$FS_AUTOLOAD_DIR/event_socket.conf.xml"
+
+# Set proper permissions
+chown freeswitch:freeswitch "$FS_AUTOLOAD_DIR/event_socket.conf.xml"
+chmod 644 "$FS_AUTOLOAD_DIR/event_socket.conf.xml"
+
+# Store the password in a secure file for later reference
+echo "$event_socket_password" > "$SCRIPT_DIR/.event_socket_password"
+chmod 600 "$SCRIPT_DIR/.event_socket_password"
+
+verbose "Event Socket password saved to: $SCRIPT_DIR/.event_socket_password"
+
 # Enable and restart FreeSWITCH
 verbose "Enabling FreeSWITCH service"
 systemctl enable freeswitch
@@ -83,6 +112,8 @@ if systemctl is-active --quiet freeswitch; then
     verbose "Internal profile SIP: 127.0.0.1:5066"
     verbose "External profile SIP: 127.0.0.1:5086"
     verbose "RTP media IP: $freeswitch_public_ip"
+    verbose "Event Socket: localhost:8021"
+    verbose "Event Socket password: $event_socket_password"
 else
     error "FreeSWITCH failed to start. Check logs: journalctl -u freeswitch"
     exit 1
