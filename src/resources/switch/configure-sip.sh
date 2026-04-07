@@ -9,8 +9,10 @@ SCRIPT_DIR="${1:-$(cd "$(dirname "$0")/../.." && pwd)}"
 
 FS_PROFILE_DIR="/etc/freeswitch/sip_profiles"
 FS_AUTOLOAD_DIR="/etc/freeswitch/autoload_configs"
+FS_MODULES_CONF="$FS_AUTOLOAD_DIR/modules.conf.xml"
 CONFIG_DIR="$SCRIPT_DIR/resources/switch/sip_profiles"
 EVENTSOCKET_CONFIG_DIR="$SCRIPT_DIR/resources/switch/config"
+HTTP_CACHE_DIR="/var/cache/freeswitch/http_cache"
 
 # Auto-detect public IP if not already set
 if [ -z "$freeswitch_public_ip" ]; then
@@ -95,6 +97,40 @@ echo "$event_socket_password" > "$SCRIPT_DIR/.event_socket_password"
 chmod 600 "$SCRIPT_DIR/.event_socket_password"
 
 verbose "Event Socket password saved to: $SCRIPT_DIR/.event_socket_password"
+
+# Configure mod_http_cache
+verbose "Configuring mod_http_cache"
+
+# Deploy http_cache config
+if [ -f "$FS_AUTOLOAD_DIR/http_cache.conf.xml" ] && [ ! -f "$FS_AUTOLOAD_DIR/http_cache.conf.xml.orig" ]; then
+    cp "$FS_AUTOLOAD_DIR/http_cache.conf.xml" "$FS_AUTOLOAD_DIR/http_cache.conf.xml.orig"
+fi
+cp "$EVENTSOCKET_CONFIG_DIR/http_cache.conf.xml" "$FS_AUTOLOAD_DIR/http_cache.conf.xml"
+chown freeswitch:freeswitch "$FS_AUTOLOAD_DIR/http_cache.conf.xml"
+chmod 644 "$FS_AUTOLOAD_DIR/http_cache.conf.xml"
+
+# Create cache directory with correct ownership
+mkdir -p "$HTTP_CACHE_DIR"
+chown -R freeswitch:freeswitch "$HTTP_CACHE_DIR"
+chmod 750 "$HTTP_CACHE_DIR"
+
+# Enable mod_http_cache in modules.conf.xml if not already active
+if [ -f "$FS_MODULES_CONF" ]; then
+    if grep -q '<load module="mod_http_cache"/>' "$FS_MODULES_CONF"; then
+        verbose "mod_http_cache already enabled in modules.conf.xml"
+    elif grep -q 'mod_http_cache' "$FS_MODULES_CONF"; then
+        # Uncomment the existing (commented-out) entry
+        sed -i 's|<!--[[:space:]]*<load module="mod_http_cache"/>.*-->|  <load module="mod_http_cache"/>|' "$FS_MODULES_CONF"
+        verbose "mod_http_cache uncommented in modules.conf.xml"
+    else
+        # Insert before closing </modules> tag
+        sed -i 's|</modules>|  <load module="mod_http_cache"/>\n</modules>|' "$FS_MODULES_CONF"
+        verbose "mod_http_cache added to modules.conf.xml"
+    fi
+else
+    error "modules.conf.xml not found at $FS_MODULES_CONF"
+    exit 1
+fi
 
 # Enable and restart FreeSWITCH
 verbose "Enabling FreeSWITCH service"

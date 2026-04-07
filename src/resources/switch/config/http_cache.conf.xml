@@ -1,0 +1,20 @@
+<configuration name="http_cache.conf" description="HTTP File Cache">
+  <settings>
+    <!-- Maximum number of URLs to keep in the cache index -->
+    <param name="max-urls" value="10000"/>
+    <!-- Directory where cached audio files are stored on disk -->
+    <param name="location" value="/var/cache/freeswitch/http_cache"/>
+    <!-- Default cache lifetime in seconds when the HTTP response provides no Cache-Control/Expires header (86400 = 24 h) -->
+    <param name="default-max-age" value="86400"/>
+    <!-- How many URLs may be queued for background pre-fetching at once -->
+    <param name="prefetch-queue-size" value="500"/>
+    <!-- Worker threads used for background pre-fetching -->
+    <param name="prefetch-thread-count" value="8"/>
+    <!-- CA bundle used to verify HTTPS server certificates -->
+    <param name="ssl-cacert" value="/etc/ssl/certs/ca-certificates.crt"/>
+    <!-- Verify that the server certificate hostname matches the URL (1 = on) -->
+    <param name="ssl-verifyhost" value="1"/>
+    <!-- Verify that the server certificate is signed by a trusted CA (1 = on) -->
+    <param name="ssl-verifypeer" value="1"/>
+  </settings>
+</configuration>
