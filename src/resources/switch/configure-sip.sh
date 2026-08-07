@@ -132,6 +132,33 @@ else
     exit 1
 fi
 
+# Enable mod_hash in modules.conf.xml if not already active. It provides the
+# `limit` application used by the dialplan to cap simultaneous callers on
+# stream and podcast subscriptions (the `caller` add-on). Inert on its own:
+# with no limit actions in any dialplan a loaded mod_hash does nothing, so this
+# is safe to ship ahead of the dialplan change that needs it.
+if [ -f "$FS_MODULES_CONF" ]; then
+    # Anchored to the start of the line (whitespace aside) so a commented-out
+    # `<!-- <load module="mod_hash"/> -->` does NOT count as already enabled.
+    # Stock modules.conf.xml ships mod_hash commented out, so an unanchored
+    # match here would report success and leave the module unloaded — and the
+    # dialplan's `limit` action would then be an unknown application.
+    if grep -qE '^[[:space:]]*<load module="mod_hash"/>' "$FS_MODULES_CONF"; then
+        verbose "mod_hash already enabled in modules.conf.xml"
+    elif grep -q 'mod_hash' "$FS_MODULES_CONF"; then
+        # Uncomment the existing (commented-out) entry
+        sed -i 's|<!--[[:space:]]*<load module="mod_hash"/>.*-->|  <load module="mod_hash"/>|' "$FS_MODULES_CONF"
+        verbose "mod_hash uncommented in modules.conf.xml"
+    else
+        # Insert before closing </modules> tag
+        sed -i 's|</modules>|  <load module="mod_hash"/>\n</modules>|' "$FS_MODULES_CONF"
+        verbose "mod_hash added to modules.conf.xml"
+    fi
+else
+    error "modules.conf.xml not found at $FS_MODULES_CONF"
+    exit 1
+fi
+
 # Enable and restart FreeSWITCH
 verbose "Enabling FreeSWITCH service"
 systemctl enable freeswitch
