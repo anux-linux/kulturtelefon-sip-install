@@ -1,0 +1,83 @@
+name: Claude Review
+
+# Required status checks (branch protection): code-review, security-review.
+# Needs the repository secret ANTHROPIC_API_KEY.
+# Findings block merge two ways:
+#   - code-review posts inline comments; branch protection requires every thread resolved
+#   - security-review fails its job while any finding is open
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  code-review:
+    name: code-review
+    # Drafts cannot be merged, so skipping them cannot let anything through.
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+    steps:
+      # GitHub withholds secrets from fork PRs and a skipped job counts as passing,
+      # so fail instead of skipping.
+      - name: Require a same-repository PR
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error::Fork PRs cannot be reviewed automatically. A maintainer must re-open the change from a branch in this repository."
+          exit 1
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          plugin_marketplaces: "https://github.com/anthropics/claude-plugins-official.git"
+          plugins: "code-review@claude-plugins-official"
+          prompt: "/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+          claude_args: '--allowedTools "mcp__github_inline_comment__create_inline_comment"'
+
+  security-review:
+    name: security-review
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Require a same-repository PR
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error::Fork PRs cannot be reviewed automatically. A maintainer must re-open the change from a branch in this repository."
+          exit 1
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+
+      - id: scan
+        uses: anthropics/claude-code-security-review@main
+        with:
+          comment-pr: true
+          run-every-commit: true
+          claude-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      # The action reports findings but does not fail the job. Fail closed: anything other
+      # than an explicit "0" blocks the required check.
+      - name: Fail while security findings are open
+        if: steps.scan.outputs.findings-count != '0'
+        run: |
+          echo "::error::Security review reported findings (count='${{ steps.scan.outputs.findings-count }}'). Fix them and push again."
+          exit 1

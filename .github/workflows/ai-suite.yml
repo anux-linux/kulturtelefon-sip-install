@@ -1,0 +1,25 @@
+---
+name: ai-suite
+
+# The copy of the ai-suite harness matches .claude/ai-suite.lock and the harness is valid.
+# Identical in all four Kulturtelefon repositories and listed in the lock: change it in all four.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  harness:
+    name: harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Copy matches the lock
+        run: scripts/ai-suite-sync.sh --check
+      - name: Harness is valid
+        run: scripts/validate.sh
