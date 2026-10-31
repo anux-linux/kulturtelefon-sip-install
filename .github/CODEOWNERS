@@ -1,0 +1,9 @@
+# High-risk paths need a person (see .github/risk-tiers.conf; scripts/validate.sh keeps both in sync).
+# GitHub only acts on this file for public repos, or private repos on a paid plan.
+/.claude/hooks/ @anux-linux
+/.claude/settings.json @anux-linux
+/.github/workflows/ @anux-linux
+/.github/CODEOWNERS @anux-linux
+/.github/risk-tiers.conf @anux-linux
+/REVIEW.md @anux-linux
+/src/ @anux-linux
