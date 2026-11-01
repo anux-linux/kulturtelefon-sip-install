@@ -70,5 +70,10 @@ repositories: `.claude/agents/`, `.claude/commands/`, `.claude/hooks/`, `.claude
    lines are dated snapshots; where they differ from Linear, Linear is right. Such a plan
    without a Linear project gets one before its next ticket is implemented, with one issue per
    open ticket titled `<ticket ID> <summary>`.
+7. Effort is `high` for every agent and subagent; the effort tables of the `coordinator` and
+   `advisor` agents name `low` or `medium` for simple work. `xhigh` or `max` is used only for a
+   specific task that needs it, and only when Tony has allowed it for the session. Nobody
+   raises the effort on their own: without Tony's permission, stay on `high`, and say in the
+   report if a higher effort would have fitted.
 
 <!-- END ai-suite -->
