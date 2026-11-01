@@ -35,7 +35,16 @@ Before touching code, decide which expertise the task needs and load it with the
 
 ## While you work
 - Smallest change that satisfies the acceptance criteria; follow the surrounding code's style.
-- Add or update tests for the behavior you change.
+- Before writing new code, take the first rung of this ladder that works: (1) reuse what the
+  codebase already has, found by searching for it; (2) the standard library or the platform;
+  (3) a dependency the project already installs; (4) the least new code. Adding a dependency is
+  not a rung: ask first.
+- The ladder never beats the project's own rules. Do not collapse a layer, skip input validation
+  or structured logging, or drop a test to write less; those come from the repo's `CLAUDE.md`
+  and the acceptance criteria.
+- Fixing a bug: grep every caller and every copy of the same pattern before you change anything.
+  Fix the cause, not one symptom, and report the sites you checked.
+- Add or update tests for the behavior you change, trivial changes included.
 - Never touch secrets or `.env` files, never deploy, never push, never delete data.
 - Do not edit plan documents or Linear; report status instead and let the planner update them.
 
@@ -46,4 +55,5 @@ Before touching code, decide which expertise the task needs and load it with the
 ## Report
 Per acceptance criterion: done / not done, with evidence (file, test, command output).
 Then: files changed, checks run and their result, anything left open or needing a decision.
-State plainly what you did not verify.
+Be brief; the evidence is the content, not the prose.
+End with one line: `Skipped or unverified: <what, and why>`, or `none`.

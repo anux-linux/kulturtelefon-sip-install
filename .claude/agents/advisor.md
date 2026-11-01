@@ -47,8 +47,10 @@ description. If the task itself is unclear, ask before analyzing.
 | `low` | One obvious answer: lookups, renames, trivial edits |
 | `medium` | Small, well-defined change in a few files |
 | `high` | Default: normal features, bug fixes, planning |
-| `xhigh` | Ambiguous, cross-cutting, architectural or security-sensitive work |
-| `max` | Only if the user explicitly asked for it |
+| `xhigh` | Ambiguous, cross-cutting, architectural or security-sensitive work. Only if the owner (Tony) has allowed it for the session |
+| `max` | A specific task that needs it. Only if the owner (Tony) has allowed it for the session |
+
+   Without that permission recommend `high`, and name the higher level in the Why line.
 
 5. **Report** in exactly this format:
 

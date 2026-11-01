@@ -33,7 +33,8 @@ else
   done
   grep -q 'anthropics/claude-code-action@' "$wf" || problems+=("Workflow does not use anthropics/claude-code-action.")
   grep -qE 'code-review.*--comment' "$wf" || problems+=("Workflow does not run /code-review with --comment.")
-  grep -q 'anthropics/claude-code-security-review@' "$wf" || problems+=("Workflow does not run the security review.")
+  grep -q 'secrets.CLAUDE_CODE_OAUTH_TOKEN' "$wf" || problems+=("Workflow does not use the CLAUDE_CODE_OAUTH_TOKEN secret.")
+  grep -q 'structured_output' "$wf" || problems+=("Workflow does not gate the security review on its structured output.")
 fi
 
 # 2. Branch protection on the base branch
@@ -88,7 +89,7 @@ fi
   echo "Blocked by require-pr-checks.sh: the PR checks are not in place."
   printf ' - %s\n' "${problems[@]}"
   echo
-  echo "Fix: add/restore .github/workflows/claude-review.yml and the ANTHROPIC_API_KEY repository secret."
+  echo "Fix: add/restore .github/workflows/claude-review.yml and the CLAUDE_CODE_OAUTH_TOKEN repository secret."
   echo "Branch protection changes GitHub settings: show the user './scripts/setup-branch-protection.sh' (dry run) and"
   echo "only apply it with '--apply' after the user approves. Then retry 'gh pr create'."
 } >&2

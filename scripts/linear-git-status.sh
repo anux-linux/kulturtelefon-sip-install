@@ -32,7 +32,7 @@ if [ -n "${LINEAR_TEAM_KEYS:-}" ]; then
 else
   pattern=${LINEAR_KEY_PATTERN:-'[A-Za-z][A-Za-z0-9]{1,9}-[0-9]+'}
 fi
-noise='^(UTF|SHA|ISO|AES|RFC|HTTP|TLS|MD|CVE|GPT|X|WCAG|ES|PEP)-'
+noise='^(UTF|SHA|ISO|AES|RFC|HTTP|TLS|MD|CVE|GPT|X|WCAG|ES|PEP|APACHE|GPL|LGPL|BSD|MIT|PYTHON|NODE|GPT|CLAUDE|OPUS|SONNET|HAIKU|IPV|TLSV|SSL)-'
 
 # Default branch: origin/HEAD, else main, else master.
 base=$(git symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || true)

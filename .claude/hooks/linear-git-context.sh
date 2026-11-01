@@ -14,7 +14,7 @@ if [ -n "${LINEAR_TEAM_KEYS:-}" ]; then
 else
   pattern=${LINEAR_KEY_PATTERN:-'[A-Za-z][A-Za-z0-9]{1,9}-[0-9]+'}
 fi
-noise='^(UTF|SHA|ISO|AES|RFC|HTTP|TLS|MD|CVE|GPT|X|WCAG|ES|PEP)-'
+noise='^(UTF|SHA|ISO|AES|RFC|HTTP|TLS|MD|CVE|GPT|X|WCAG|ES|PEP|APACHE|GPL|LGPL|BSD|MIT|PYTHON|NODE|GPT|CLAUDE|OPUS|SONNET|HAIKU|IPV|TLSV|SSL)-'
 
 mapfile -t keys < <(grep -oiE "(^|[^A-Za-z0-9])${pattern}" <<<"$prompt" | grep -oiE "$pattern" \
   | tr '[:lower:]' '[:upper:]' | grep -vE "$noise" | awk '!seen[$0]++' | head -n 5 || true)

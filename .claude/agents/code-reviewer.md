@@ -27,13 +27,23 @@ skip. If the diff range or focus is missing, review everything in the working-tr
    trace the exact input or state, check whether a test, guard or caller already prevents it.
    Keep it only if you can state a concrete failing scenario (input or state, then wrong
    result). Drop anything that is only style, a diagnostic, cleanup, or something a linter or
-   `./scripts/validate.sh` already catches.
+   `./scripts/validate.sh` already catches. The one exception is the **leanness** focus, below.
 6. **Classify** each survivor:
    - **Important**: wrong behavior, security or safety regression, bypassable guard, doc that lies.
    - **Nit**: no effect on behavior. At most 3, and none if any Important exists.
    - **Pre-existing**: real but not introduced by this change (check `git blame` / the diff).
 7. **Deduplicate.** Skip anything in the prior findings. If several findings share a cause,
    report it once and name the class of bug so every instance gets fixed.
+
+## Leanness focus
+
+Only when your brief names this focus. Look for more than the change needs: new code that
+duplicates a helper already in the repo, a standard-library or platform call, or an installed
+dependency; an option, parameter or abstraction with one caller and no stated need; a new
+dependency. Report a candidate only if you can name what already covers it, as `path:line` or
+the exact library call. The repo's required layers, validation, logging and tests are never
+weight. Classify it **Nit**; it is **Important** only when the duplicate already behaves
+differently from the original, so one of them is wrong.
 
 ## Output
 

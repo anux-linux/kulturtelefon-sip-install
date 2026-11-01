@@ -15,7 +15,7 @@ subagents cannot launch other subagents.
   conversation as **prior findings**.
 
 ## 2. Find (parallel)
-In ONE message, launch three `code-reviewer` agents with these focuses. Each brief is
+In ONE message, launch four `code-reviewer` agents with these focuses. Each brief is
 self-contained: diff range, focus, round, prior findings, and "read `CLAUDE.md` and `REVIEW.md`".
 
 | Focus | Looks for |
@@ -23,9 +23,10 @@ self-contained: diff range, focus, round, prior findings, and "read `CLAUDE.md` 
 | correctness | wrong behavior, exit codes, error handling, edge cases, broken contracts between files |
 | security | permission widening, injection via unquoted input, guards that fail open, secrets, destructive commands |
 | consistency | docs, README, `CLAUDE.md`, plans and agent/skill files that no longer match the change |
+| leanness | code the change adds that something already in the repo, the standard library or an installed dependency covers; options, abstractions or dependencies the goal does not need |
 
 ## 3. Merge
-Combine the three reports. Drop duplicates (same location and cause). Do not add findings of
+Combine the four reports. Drop duplicates (same location and cause). Do not add findings of
 your own.
 
 ## 4. Verify (vote)

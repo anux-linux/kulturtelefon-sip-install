@@ -8,6 +8,13 @@ err() { echo "FAIL: $*" >&2; fail=1; }
 
 jq empty .claude/settings.json || err ".claude/settings.json is not valid JSON"
 
+# bashOutputMaxChars is clamped by Claude Code to 4000..128000; reject values outside it.
+cap=$(jq -r '.bashOutputMaxChars // empty' .claude/settings.json)
+if [ -n "$cap" ]; then
+  [[ "$cap" =~ ^[0-9]+$ ]] && [ "$cap" -ge 4000 ] && [ "$cap" -le 128000 ] \
+    || err "bashOutputMaxChars must be an integer from 4000 to 128000 (got '$cap')"
+fi
+
 for h in .claude/hooks/*.sh; do
   [ -x "$h" ] || err "$h is not executable"
   bash -n "$h" || err "$h has syntax errors"
