@@ -1,4 +1,4 @@
-ai-suite ea40fb03a5be830399aa966a88137bc9cb629240
+ai-suite eaded788da6ae398e67268df4fb2e34c1056ed4f
 100644 aac61a0f7a953789968c5eaa932a40840abc93fd080ebe21feb15c63851b603a  .claude/agents/advisor.md
 100644 5e3a604d4616f70274b1f851b4b516cd15e032162cacd8879e67db956308d253  .claude/agents/blue-team.md
 100644 081bc7d19f224d3db75b08e05517d05569813b15e985c9b01a74131d95247aa5  .claude/agents/code-reviewer.md
@@ -17,7 +17,7 @@ ai-suite ea40fb03a5be830399aa966a88137bc9cb629240
 100755 a053cdde32cabcde37bd342d1376ad55a4b642f251578d5d132768e15d48f7bc  .claude/hooks/protect-files.sh
 100755 92787832bf3b7dc4367b78fa90a7d7e775224743d636208c04b79e88c1e3411c  .claude/hooks/quality-gate.sh
 100755 5e087c05171c4d3c3fced5cefffe46a3b1b5e49078a2308cf7eab287bf23e65e  .claude/hooks/require-merge-checks.sh
-100755 cf3d8f60ba21b4c06b0358d4dc09a00facdb71ed286257f8eddbf944c5416b0f  .claude/hooks/require-pr-checks.sh
+100755 7e01ce7cee3d7521997f5061f08085bdfda4d1a589684d0d5082735ba206842b  .claude/hooks/require-pr-checks.sh
 100755 43c8689f42c4780ee53c422e8b59699d54b008a9c95dd65fb042c39156d36327  .claude/hooks/session-start.sh
 100644 1a44e63cbf40abdac053d73b034d4455f5741fed9ad89b576b86c1950b05b21b  .claude/settings.json
 100644 623654301faa74e9eccff9d1f703ff08f69f65d68dac2fafd440d70f08cf2548  .claude/skills/conventional-commit/SKILL.md
@@ -42,7 +42,7 @@ ai-suite ea40fb03a5be830399aa966a88137bc9cb629240
 100644 108c19d2454d91e01534f1a49c71128e7aba67a6933a3f6350538d7ebfb35e14  .claude/skills/remove-dead-code/workflows/validate-removal.md
 100644 026d784b8ea0e4f62da7fdf90b1228510d1e4c23b667178d7bb58753543d6fb8  .claude/skills/sip-pbx/SKILL.md
 100644 d8b2c6d438f023eb46cd91109794d994db5732c9f280526e5a1f6e0f8f4bba45  .github/workflows/ai-suite.yml
-100644 67437245853eb1131ba563c1d81c791d02c42bbde811e4753cb074e1898c8dfa  .github/workflows/claude-review.yml
+100644 f78993c78490d09c7bec90ce9e968fb7fd8281bb8eb0c59a73dcae4e7e3eca05  .github/workflows/claude-review.yml
 100755 1826c14b9d1d0d5d09618b73c4d56c87614faf32197fdba3e4231af049721871  scripts/ai-suite-sync.sh
 100755 8e31f6675697a0d381b77a79713b527a869f517671803fb25de53f197440e0fe  scripts/linear-git-status.sh
 100755 fde5ca1708e0ce25b264ed78da985993d1ab8e44bfd73ab58c1149ddf8b25c8e  scripts/risk-tier.sh
