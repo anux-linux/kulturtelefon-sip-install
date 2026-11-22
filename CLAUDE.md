@@ -66,8 +66,12 @@ repositories: `.claude/agents/`, `.claude/commands/`, `.claude/hooks/`, `.claude
    every issue has exactly one `repo:` label, and every commit names its issue in a
    `Refs KUL-<n>` line. Without Linear tools, stop and say so; never track work in the
    repository instead.
-6. Plans written before ai-suite stay where they are and keep their ticket IDs. Their status
-   lines are dated snapshots; where they differ from Linear, Linear is right. Such a plan
+6. Plans written before ai-suite keep their ticket IDs. A finished one lives in
+   `docs/plans/done/` with its original text. An open one has a plan page from
+   `templates/plan.md` in its state folder; its original text is kept unchanged as a reference
+   document (`docs/specs/` in kulturtelefon-website, `doc/specs/` in repositories that keep
+   their other documents in `doc/`) that the plan page links to. Status lines in a reference
+   document are dated snapshots; where they differ from Linear, Linear is right. Such a plan
    without a Linear project gets one before its next ticket is implemented, with one issue per
    open ticket titled `<ticket ID> <summary>`.
 7. Effort is `high` for every agent and subagent; the effort tables of the `coordinator` and
