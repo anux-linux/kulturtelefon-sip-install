@@ -66,14 +66,16 @@ repositories: `.claude/agents/`, `.claude/commands/`, `.claude/hooks/`, `.claude
    every issue has exactly one `repo:` label, and every commit names its issue in a
    `Refs KUL-<n>` line. Without Linear tools, stop and say so; never track work in the
    repository instead.
-6. Plans written before ai-suite keep their ticket IDs. A finished one lives in
-   `docs/plans/done/` with its original text. An open one has a plan page from
+6. Plans written before ai-suite keep their ticket IDs. A finished plan, written before ai-suite
+   or after, lives in `docs/plans/done/` as a one-page summary: goal, outcome, the ticket and
+   decision IDs that code or other documents cite, its load-bearing rules and its Linear project;
+   its full text stays in git history. An open plan written before ai-suite has a plan page from
    `templates/plan.md` in its state folder; its original text is kept unchanged as a reference
    document (`docs/specs/` in kulturtelefon-website, `doc/specs/` in repositories that keep
-   their other documents in `doc/`) that the plan page links to. Status lines in a reference
-   document are dated snapshots; where they differ from Linear, Linear is right. Such a plan
-   without a Linear project gets one before its next ticket is implemented, with one issue per
-   open ticket titled `<ticket ID> <summary>`.
+   their other documents in `doc/`) that the plan page links to. Status lives in Linear; a status
+   line in any document is a dated snapshot, and Linear is right. Such a plan without a Linear
+   project gets one before its next ticket is implemented, with one issue per open ticket titled
+   `<ticket ID> <summary>`.
 7. Effort is `high` for every agent and subagent; the effort tables of the `coordinator` and
    `advisor` agents name `low` or `medium` for simple work. `xhigh` or `max` is used only for a
    specific task that needs it, and only when Tony has allowed it for the session. Nobody
